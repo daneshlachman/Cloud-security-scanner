@@ -3,11 +3,11 @@ import json
 import threading
 import simplejson
 
-# this file is used to communicate with the scanner (only in dev)
+# this file is used to communicate with the scanner (only for dev purposes)
 
 ip_address = '127.0.0.1'
 port = '12345'
-endpoint = '/whitelist'
+endpoint = '/config'
 # defining the api-endpoint
 API_ENDPOINT = 'http://' + ip_address + ':' + port + endpoint
 

@@ -30,8 +30,8 @@ class Scanner:
                 hash_content = (str(readfile(current_file)) + str(current_modified_date))
                 files.append(current_file)
                 hashes.append(hashlib.md5(hash_content.encode('utf-8')).digest())
-        time.sleep(self.interval)
 
+        time.sleep(self.interval)
         # CHECK FOR HASHES TO BE IDENTICAL
         self.change_detector(files, hashes)
         self.scan_directories()

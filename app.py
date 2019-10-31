@@ -10,7 +10,7 @@ Scanner = Scanner()
 
 
 # define route for config file from the logger
-@app.route('/whitelist', methods=['POST'])
+@app.route('/config', methods=['POST'])
 def process_whitelist_files():
     if request.method == 'POST':
         Scanner.path = json.loads(request.form['path'])
