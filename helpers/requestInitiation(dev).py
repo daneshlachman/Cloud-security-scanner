@@ -1,8 +1,9 @@
-# importing the requests library 
 import requests
 import json
 import threading
 import simplejson
+
+# this file is used to communicate with the scanner (only in dev)
 
 ip_address = '127.0.0.1'
 port = '12345'
@@ -15,7 +16,7 @@ whitelistedFiles = ['asdfasdf', '3129872839-14']
 interval = 3
 path = r"C:\Users\Danesh\Documents\Pythontestfolder"
 
-dataToSend = {'files': json.dumps(whitelistedFiles),
+dataToSend = {'whitelist': json.dumps(whitelistedFiles),
               'interval': json.dumps(interval),
               'path': json.dumps(path)
               }

@@ -1,25 +1,32 @@
 from flask import Flask
 from flask import request
 import json
-import pdb
 from main import FileChange
+from threading import Thread
 
+# initiate app & scanner object
 app = Flask(__name__)
-
-whitelistedFiles = ['randomtext.txt']
-interval = 3
-path = r"C:\Users\Danesh\Documents\Pythontestfolder"
+scannerObject = FileChange()
 
 
+# define route for config file from the logger
 @app.route('/whitelist', methods=['POST'])
 def process_whitelist_files():
     if request.method == 'POST':
-        # print(request.form['files'])
-        print(json.loads(request.form['files']))
-        pdb.set_trace()
-        FileChange(interval, whitelistedFiles, path)
-        return 'OK'
+        scannerObject.path = json.loads(request.form['path'])
+        scannerObject.whitelist = json.loads(request.form['whitelist'])
+        scannerObject.interval = json.loads(request.form['interval'])
+        return scannerObject.__dict__
+
+
+def run_the_app():
+    app.run(debug=True, port=12345)
+
+
+def run_the_scanner():
+    scannerObject.start_scanning()
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=12345)  # run app in debug mode on port 5000
+    Thread(target=run_the_app()).start()
+    Thread(target=run_the_scanner()).start()
