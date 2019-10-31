@@ -1,37 +1,54 @@
 import os
 import hashlib
-from fileProcessing import readfile
-
-# path = input("Enter the to be scanned path ")
-path = r"C:\Users\Danesh\Documents\Pythontestfolder"
-
-files = []
-timeStampsLastModified = []
-hashes = []
-whitelistedFiles = ['randomtext.txt']
-
-# r=root, d=directories, f = files
-for r, d, f in os.walk(path):
-    for file in f:
-        if file in whitelistedFiles:
-            continue
-        currentFile = os.path.join(r, file)
-        currentModifiedDate = os.path.getmtime(path)
-        files.append(currentFile)
-        timeStampsLastModified.append(currentModifiedDate)
-        hashContent = (str(readfile(currentFile)) + str(currentModifiedDate))
-        hashes.append(hashlib.md5(hashContent.encode('utf-8')))
-
-# print all hashes of files in entererd path recursively
-# for hash in hashes:
-#     print(hash)
+from helpers.fileProcessor import readfile
+import json, threading, pdb, datetime, time
 
 
-for x in files:
-    print(x)
+class FileChange:
+    def __init__(self, interval, whitelist, path):
+        self.FileToCompare = []
+        self.HashToCompare = []
+        self.error_files = []
+        self.path = path
+        self.interval = interval
+        self.whitelist = whitelist
+        self.scan_directories()
 
-print('\n')
+    def scan_directories(self):
+        files = []
+        timeStampsLastModified = []
+        hashes = []
+        combinedPathAndHash = {}
 
-print('Number of files: ', len(files))
-print('Number of timestamps: ', len(timeStampsLastModified))
-print('Number of hashes: ', len(hashes))
+        # r=root, d=directories, f = files
+        for r, d, f in os.walk(self.path):
+            for file in f:
+                if file in self.whitelist:
+                    continue
+                currentFile = os.path.join(r, file)
+                currentModifiedDate = os.path.getmtime(self.path)
+                hashContent = (str(readfile(currentFile)) + str(currentModifiedDate))
+                files.append(currentFile)
+                hashes.append(hashlib.md5(hashContent.encode('utf-8')).digest())
+        time.sleep(self.interval)
+
+        # CHECK FOR HASHES TO BE IDENTICAL
+        FileChange.change_detector(self, files, hashes)
+        # DO SOMETHING RECURSIVE
+        self.scan_directories()
+
+    def change_detector(self, files, hashes):
+        if self.FileToCompare != [] and self.HashToCompare != []:
+            i = 0
+            for file, hash in zip(files, hashes):
+                if file != self.FileToCompare[i] and hash != self.HashToCompare[i]:
+                    self.error_files.append(self.FileToCompare[i])
+                i += 1
+        else:
+            self.FileToCompare = files
+            self.HashToCompare = hashes
+        print(self.error_files)
+
+# whitelistedFiles = ['randomtext.txt']
+# interval = 3
+# FileChange(interval, whitelistedFiles)

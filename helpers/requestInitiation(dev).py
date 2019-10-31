@@ -1,0 +1,28 @@
+# importing the requests library 
+import requests
+import json
+import threading
+import simplejson
+
+ip_address = '127.0.0.1'
+port = '12345'
+endpoint = '/whitelist'
+# defining the api-endpoint
+API_ENDPOINT = 'http://' + ip_address + ':' + port + endpoint
+
+# your source code here
+whitelistedFiles = ['asdfasdf', '3129872839-14']
+interval = 3
+path = r"C:\Users\Danesh\Documents\Pythontestfolder"
+
+dataToSend = {'files': json.dumps(whitelistedFiles),
+              'interval': json.dumps(interval),
+              'path': json.dumps(path)
+              }
+
+# sending post request and saving response as response object
+r = requests.post(url=API_ENDPOINT, data=dataToSend)
+
+# extracting response text
+pastebin_url = r.text
+print("The pastebin URL is:%s" % pastebin_url)
