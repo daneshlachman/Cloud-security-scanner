@@ -4,7 +4,8 @@ import time
 from helpers.fileProcessor import readfile
 import pdb
 
-class FileChange:
+
+class Scanner:
     def __init__(self):
         self.FileToCompare = []
         self.HashToCompare = []
@@ -32,7 +33,7 @@ class FileChange:
         time.sleep(self.interval)
 
         # CHECK FOR HASHES TO BE IDENTICAL
-        FileChange.change_detector(self, files, hashes)
+        self.change_detector(files, hashes)
         self.scan_directories()
 
     # function for validating of hashes have changed, if so append corresponding file into error list
