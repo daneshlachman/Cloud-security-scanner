@@ -13,8 +13,8 @@ API_ENDPOINT = 'http://' + ip_address + ':' + port + endpoint
 
 # your source code here
 whitelistedFiles = ['asdfasdf', '3129872839-14']
-interval = 3
-path = r"C:\Users\Danesh\Documents\Pythontestfolder"
+interval = 2
+path = r"C:\Users\DaneshLachman\Downloads"
 
 dataToSend = {'whitelist': json.dumps(whitelistedFiles),
               'interval': json.dumps(interval),

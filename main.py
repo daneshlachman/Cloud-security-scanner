@@ -2,16 +2,16 @@ import os
 import hashlib
 import time
 from helpers.fileProcessor import readfile
-
+import pdb
 
 class FileChange:
     def __init__(self):
         self.FileToCompare = []
         self.HashToCompare = []
         self.error_files = []
-        self.path = None
-        self.interval = None
-        self.whitelist = None
+        self.path = r'C:\Users'
+        self.interval = 5
+        self.whitelist = []
 
     def start_scanning(self):
         self.scan_directories()
@@ -20,11 +20,11 @@ class FileChange:
         files = []
         hashes = []
 
-        for root, directory, f in os.walk(self.path):
+        for r, d, f in os.walk(self.path):
             for file in f:
                 if file in self.whitelist:
                     continue
-                current_file = os.path.join(root, file)
+                current_file = os.path.join(r, file)
                 current_modified_date = os.path.getmtime(self.path)
                 hash_content = (str(readfile(current_file)) + str(current_modified_date))
                 files.append(current_file)
@@ -46,4 +46,3 @@ class FileChange:
         else:
             self.FileToCompare = files
             self.HashToCompare = hashes
-        print(self.error_files)
