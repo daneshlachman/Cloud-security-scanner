@@ -10,11 +10,14 @@ class Scanner:
         self.FileToCompare = []
         self.HashToCompare = []
         self.error_files = []
-        self.path = r'C:\Users'
-        self.interval = 5
+        self.path = None
+        self.interval = 10
         self.whitelist = []
 
-    def start_scanning(self):
+    def start_scanning(self, path, interval, whitelist):
+        self.path = path
+        self.interval = interval
+        self.whitelist = whitelist
         self.scan_directories()
 
     def scan_directories(self):
@@ -26,11 +29,10 @@ class Scanner:
                 if file in self.whitelist:
                     continue
                 current_file = os.path.join(r, file)
-                current_modified_date = os.path.getmtime(self.path)
+                current_modified_date = os.path.getmtime(current_file)
                 hash_content = (str(readfile(current_file)) + str(current_modified_date))
                 files.append(current_file)
-                hashes.append(hashlib.md5(hash_content.encode('utf-8')).digest())
-
+                hashes.append(hashlib.md5(hash_content).digest())
         time.sleep(self.interval)
         # CHECK FOR HASHES TO BE IDENTICAL
         self.change_detector(files, hashes)
