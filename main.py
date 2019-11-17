@@ -2,6 +2,7 @@ import os
 import hashlib
 import time
 from helpers.fileProcessor import readfile
+import requests, json
 import pdb
 
 
@@ -22,30 +23,29 @@ class Scanner:
 
     def scan_directories(self):
         files = []
-        hashes = []
 
         for r, d, f in os.walk(self.path):
             for file in f:
                 if file in self.whitelist:
                     continue
+                file_and_hash_obj = {}
                 current_file = os.path.join(r, file)
                 current_modified_date = os.path.getmtime(current_file)
                 hash_content = (str(readfile(current_file)) + str(current_modified_date))
-                files.append(current_file)
-                hashes.append(hashlib.md5(hash_content).digest())
+                file_and_hash_obj.update({"file": current_file})
+                file_and_hash_obj.update({"hash": hashlib.md5(hash_content.encode('UTF-8')).digest()})
+                files.append(file_and_hash_obj)
+        send_data_to_logger(files)
         time.sleep(self.interval)
-        # CHECK FOR HASHES TO BE IDENTICAL
-        self.change_detector(files, hashes)
         self.scan_directories()
 
-    # function for validating of hashes have changed, if so append corresponding file into error list
-    def change_detector(self, files, hashes):
-        if self.FileToCompare != [] and self.HashToCompare != []:
-            i = 0
-            for file, hash in zip(files, hashes):
-                if file != self.FileToCompare[i] and hash != self.HashToCompare[i]:
-                    self.error_files.append(self.FileToCompare[i])
-                i += 1
-        else:
-            self.FileToCompare = files
-            self.HashToCompare = hashes
+
+def send_data_to_logger(files):
+    with open('config.json') as json_config:
+        data = json.load(json_config)
+        request_data = {
+            "uuid": data['uuid'],
+            "computer": data['computer_name'],
+            "files": files
+        }
+    response = requests.post(url=data['logger_address'], data=data)

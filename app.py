@@ -2,33 +2,20 @@ import json
 import os
 import pdb
 from threading import Thread
-
-from flask import Flask
-
 from main import Scanner
+import uuid
 
-# initiate app & scanner object
-# app = Flask(__name__)
 Scanner_object = Scanner()
 
 
-# define route for config file from the logger
-# @app.route('/config', methods=['POST'])
-# def process_whitelist_files():
-#     if request.method == 'POST':
-#         Scanner.path = json.loads(request.form['path'])
-#         Scanner.whitelist = json.loads(request.form['whitelist'])
-#         Scanner.interval = json.loads(request.form['interval'])
-#         return Scanner.__dict__
-
-
 def create_standard_config():
-    pdb.set_trace()
     config = {
-        'interval': '30',
-        'path': r'C:\Users\DaneshLachman\Documents',
+        'computer_name': os.environ['COMPUTERNAME'],
+        'uuid': str(uuid.uuid1()),
+        'interval': 30,
+        'path': r'C:\Users\Danesh\Desktop',
         'whitelist': [],
-        'default_logger_ip': '192.168.123.123'
+        'logger_address': '192.168.123.123'
     }
     print('Creating config file with the following data: ', config)
 
@@ -41,13 +28,12 @@ def run_the_scanner():
         with open('config.json') as json_file:
             data = json.load(json_file)
         Scanner_object.start_scanning(data['path'], data['interval'], data['whitelist'])
-    elif not os.path.exists('config.json'):
+    else:
+        print('No config.json found, creating a new default config.....')
         create_standard_config()
         with open('config.json') as json_file:
             data = json.load(json_file)
         Scanner_object.start_scanning(data['path'], data['interval'], data['whitelist'])
-    else:
-        raise Exception('Error with finding/creating config file')
 
 
 if __name__ == '__main__':
