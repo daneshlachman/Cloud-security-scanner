@@ -15,7 +15,7 @@ def create_standard_config():
         'interval': 30,
         'path': r'C:\Users\Danesh\Desktop',
         'whitelist': [],
-        'logger_address': '192.168.123.123'
+        'logger_url': '192.168.123.123:5000'
     }
     print('Creating config file with the following data: ', config)
 
@@ -23,6 +23,7 @@ def create_standard_config():
         json.dump(config, json_object)
 
 
+# check if config.json file exists, else create a default one, then start the scanner.
 def run_the_scanner():
     if os.path.exists('config.json'):
         with open('config.json') as json_file:
